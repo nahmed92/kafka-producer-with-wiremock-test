@@ -26,32 +26,41 @@
  * #endregion
  */
 
-package com.etilize.burraq.krp;
+package com.etilize.burraq.krp.config;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.schema.client.ConfluentSchemaRegistryClient;
+import org.springframework.cloud.stream.schema.client.EnableSchemaRegistryClient;
+import org.springframework.cloud.stream.schema.client.SchemaRegistryClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.etilize.burraq.krp.SchemaRegistryClientProperties;
 
 /**
- * Represents the Application class which houses the main entry-point to run the application
+ * Kafka Configuration
  *
- * @author Faisal Feroz
+ * @author Nasir Ahmed
  *
  */
-@SpringBootApplication
-public class KafkaRestProxyApplication {
+@Configuration
+@EnableSchemaRegistryClient
+public class KafkaConfig {
+
+    @Autowired
+    private SchemaRegistryClientProperties schemaRegistryClientProperties;
 
     /**
-     * protected constructor
-     */
-    KafkaRestProxyApplication() {
-    }
-
-    /**
-     * main entry-point
+     * create schema registry client
      *
-     * @param args arguments
+     * @param endpoint schema registry endpoint
+     *
+     * @return {@link SchemaRegistryClient}
      */
-    public static void main(String[] args) {
-        SpringApplication.run(KafkaRestProxyApplication.class, args);
+    @Bean
+    public SchemaRegistryClient schemaRegistryClient() {
+        final ConfluentSchemaRegistryClient client = new ConfluentSchemaRegistryClient();
+        client.setEndpoint(schemaRegistryClientProperties.getEndpoint());
+        return client;
     }
 }

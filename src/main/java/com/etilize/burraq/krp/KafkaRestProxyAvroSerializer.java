@@ -28,30 +28,52 @@
 
 package com.etilize.burraq.krp;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.io.IOException;
+import java.util.Map;
+
+import org.apache.avro.generic.GenericData.Record;
+import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.io.DatumWriter;
+import org.apache.kafka.common.errors.SerializationException;
+import org.apache.kafka.common.serialization.Serializer;
+import org.springframework.integration.kafka.serializer.avro.AvroSerializer;
 
 /**
- * Represents the Application class which houses the main entry-point to run the application
+ * Avro Serializer class
  *
- * @author Faisal Feroz
+ * @author Nasir Ahmed
  *
  */
-@SpringBootApplication
-public class KafkaRestProxyApplication {
+public class KafkaRestProxyAvroSerializer implements Serializer<Record> {
 
     /**
-     * protected constructor
+     * {@inheritDoc}
      */
-    KafkaRestProxyApplication() {
+    @Override
+    public void configure(final Map<String, ?> configs, final boolean isKey) {
     }
 
     /**
-     * main entry-point
-     *
-     * @param args arguments
+     * {@inheritDoc}
      */
-    public static void main(String[] args) {
-        SpringApplication.run(KafkaRestProxyApplication.class, args);
+    @Override
+    public byte[] serialize(final String topic, final Record data) {
+        try {
+            final DatumWriter<Record> datumWriter = new GenericDatumWriter<Record>(
+                    data.getSchema());
+            final AvroSerializer<Record> avroSerializer = new AvroSerializer<>();
+            return avroSerializer.serialize(data, datumWriter);
+        } catch (final IOException ex) {
+            throw new SerializationException(
+                    String.format("Can't serialize data= %s for topic= %s ", data, topic),
+                    ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void close() {
     }
 }

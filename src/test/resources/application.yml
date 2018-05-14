@@ -10,3 +10,13 @@ server:
 ---
 spring:
   profiles: test
+---
+spring:
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+---
+kafka:
+    rest:
+      proxy:
+        schemaRegistryClient:
+          endpoint: http://localhost:${wiremock.server.port}

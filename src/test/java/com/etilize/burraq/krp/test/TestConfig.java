@@ -1,8 +1,8 @@
 /*
  * #region
- * kafka-rest-proxy
+ * import-file-configuration-service
  * %%
- * Copyright (C) 2018 Etilize
+ * Copyright (C) 2017 - 2018 Etilize
  * %%
  * NOTICE: All information contained herein is, and remains the property of ETILIZE.
  * The intellectual and technical concepts contained herein are proprietary to
@@ -26,32 +26,24 @@
  * #endregion
  */
 
-package com.etilize.burraq.krp;
+package com.etilize.burraq.krp.test;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * Represents the Application class which houses the main entry-point to run the application
- *
- * @author Faisal Feroz
- *
- */
-@SpringBootApplication
-public class KafkaRestProxyApplication {
+import com.etilize.avro.utils.AvroInteropUtils;
+import com.fasterxml.jackson.dataformat.avro.AvroMapper;
 
-    /**
-     * protected constructor
-     */
-    KafkaRestProxyApplication() {
+@Configuration
+public class TestConfig {
+
+    @Bean
+    public AvroInteropUtils avroInteropUtils(final AvroMapper avroMapper) {
+        return new AvroInteropUtils(avroMapper);
     }
 
-    /**
-     * main entry-point
-     *
-     * @param args arguments
-     */
-    public static void main(String[] args) {
-        SpringApplication.run(KafkaRestProxyApplication.class, args);
+    @Bean
+    public AvroMapper avroMapper() {
+        return new AvroMapper();
     }
 }

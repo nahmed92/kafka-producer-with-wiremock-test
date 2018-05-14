@@ -15,7 +15,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.5.6.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
     <properties>
@@ -27,6 +27,12 @@
         <sonar.host.url>http://sonar.etilizepak.com</sonar.host.url>
         <docker.repo.url>repo.etilizepak.com:444</docker.repo.url>
         <docker.image.prefix>etilize</docker.image.prefix>
+        <spring-kafka.version>2.1.4.RELEASE</spring-kafka.version>
+        <spring-integration-kafka-version>1.3.1.RELEASE</spring-integration-kafka-version>
+        <spring-cloud-contract-wiremock-version>1.2.1.RELEASE</spring-cloud-contract-wiremock-version>
+        <wiremock-version>2.12.0</wiremock-version>
+        <jackson.version>2.9.3</jackson.version>
+        <avro-utils-version>1.0.0-SNAPSHOT</avro-utils-version>
     </properties>
 
     <inceptionYear>2018</inceptionYear>
@@ -54,12 +60,9 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-stream-kafka</artifactId>
-        </dependency>
-         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-stream-binder-kafka</artifactId>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <version>${spring-kafka.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -71,9 +74,38 @@
             <version>${avro.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-avro-serializer</artifactId>
-            <version>4.0.0</version>
+            <groupId>com.etilize.avro</groupId>
+            <artifactId>avro-utils</artifactId>
+            <version>${avro-utils-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-avro</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -103,15 +135,26 @@
             <version>1.4.5</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-kafka</artifactId>
+            <version>${spring-integration-kafka-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.kafka</groupId>
+                    <artifactId>kafka-clients</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.kafka</groupId>
+                    <artifactId>kafka_2.10</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -151,6 +194,24 @@
             <groupId>com.openpojo</groupId>
             <artifactId>openpojo</artifactId>
             <version>0.8.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+            <version>${spring-kafka.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-contract-wiremock</artifactId>
+            <version>${spring-cloud-contract-wiremock-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>${wiremock-version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -206,7 +267,7 @@
                         <compilerId>javac-with-errorprone</compilerId>
                         <forceJavacCompilerUse>true</forceJavacCompilerUse>
                         <!-- maven-compiler-plugin defaults to targeting Java 5, but our javac
-                        only supports >=6 -->
+                            only supports >=6 -->
                         <source>${java.version}</source>
                         <target>${java.version}</target>
                         <showWarnings>true</showWarnings>
@@ -217,8 +278,8 @@
                             <artifactId>plexus-compiler-javac-errorprone</artifactId>
                             <version>2.8</version>
                         </dependency>
-                        <!-- override plexus-compiler-javac-errorprone's dependency on
-                        Error Prone with the latest version -->
+                        <!-- override plexus-compiler-javac-errorprone's dependency on Error
+                            Prone with the latest version -->
                         <dependency>
                             <groupId>com.google.errorprone</groupId>
                             <artifactId>error_prone_core</artifactId>
@@ -241,7 +302,6 @@
                         <excludes>
                             <exclude>${project.build.itSourceDirectory}/**/*.java</exclude>
                         </excludes>
-                        <workingDirectory>${project.build.directory}</workingDirectory>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -262,6 +322,7 @@
                 <sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
                 <sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
                 <sonar.exclusions>**/generated-sources/**</sonar.exclusions>
+                <sonar.report.export.path>sonar-report.json</sonar.report.export.path>
             </properties>
             <build>
                 <plugins>
@@ -348,8 +409,7 @@
                                 <include>${project.build.testSourceDirectory}/**/*.java</include>
                                 <include>${project.basedir}/${project.build.itSourceDirectory}/**/*.java</include>
                             </includes>
-                            <!-- not using \s as it removes blank lines as
-                                well -->
+                            <!-- not using \s as it removes blank lines as well -->
                             <token>[ ]+$</token>
                             <value />
                             <regexFlags>
@@ -383,8 +443,7 @@
                         <artifactId>json-smart</artifactId>
                         <version>2.2</version>
                     </dependency>
-                    <!-- citrus-core needs version 2.0.0 and spring needs
-                        0.9.1 -->
+                    <!-- citrus-core needs version 2.0.0 and spring needs 0.9.1 -->
                     <dependency>
                         <groupId>com.jayway.jsonpath</groupId>
                         <artifactId>json-path</artifactId>
@@ -469,7 +528,6 @@
             </build>
         </profile>
     </profiles>
-
     <distributionManagement>
         <repository>
             <id>deployment</id>

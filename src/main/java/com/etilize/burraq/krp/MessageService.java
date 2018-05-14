@@ -28,30 +28,19 @@
 
 package com.etilize.burraq.krp;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 /**
- * Represents the Application class which houses the main entry-point to run the application
+ * This service publishes Avro message to provided topic.
+ * to provided topic
  *
- * @author Faisal Feroz
+ * @author Nasir Ahmed
  *
  */
-@SpringBootApplication
-public class KafkaRestProxyApplication {
+public interface MessageService {
 
     /**
-     * protected constructor
-     */
-    KafkaRestProxyApplication() {
-    }
-
-    /**
-     * main entry-point
+     * Publishes message to kafka
      *
-     * @param args arguments
+     * @param message {@link Message}
      */
-    public static void main(String[] args) {
-        SpringApplication.run(KafkaRestProxyApplication.class, args);
-    }
+    void publish(Message message);
 }
