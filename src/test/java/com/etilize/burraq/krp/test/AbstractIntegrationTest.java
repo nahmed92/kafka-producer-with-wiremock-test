@@ -48,6 +48,8 @@ import org.springframework.kafka.test.rule.KafkaEmbedded;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 
+import com.google.common.collect.Maps;
+
 /**
  * Base class for integration tests
  *
@@ -60,7 +62,11 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
     @Autowired
     protected ApplicationContext context;
 
-    protected static String Message_TOPIC = "TestingTopic";
+    protected static String MESSAGE_TOPIC = "TestingTopic";
+
+    private static final String AUTO_CREATE_TOPIC_ENABLE = "auto.create.topics.enable";
+
+    private static final String AUTO_OFFEST_RESET = "auto.offset.reset";
 
     protected KafkaMessageListenerContainer<String, byte[]> container;
 
@@ -68,10 +74,15 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
 
     @ClassRule
     public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(2, true, 2,
-            Message_TOPIC);
+            MESSAGE_TOPIC);
 
     @Before
     public void setUp() throws Exception {
+
+        Map<String, String> brokerProperties = Maps.newHashMap();
+        brokerProperties.put(AUTO_CREATE_TOPIC_ENABLE, "false");
+        embeddedKafka.brokerProperties(brokerProperties);
+
         // set up the Kafka consumer properties
         final Map<String, Object> consumerProperties = KafkaTestUtils.consumerProps(
                 "messageService", "false", embeddedKafka);
@@ -80,6 +91,7 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
                 StringDeserializer.class);
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
                 ByteArrayDeserializer.class);
+        consumerProperties.put(AUTO_OFFEST_RESET, "earliest");
 
         // create a Kafka consumer factory
         final DefaultKafkaConsumerFactory<String, byte[]> consumerFactory = new DefaultKafkaConsumerFactory<>(
@@ -87,7 +99,7 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
 
         // set the topic that needs to be consumed
         final ContainerProperties containerProperties = new ContainerProperties(
-                Message_TOPIC);
+                MESSAGE_TOPIC);
 
         // create a Kafka MessageListenerContainer
         container = new KafkaMessageListenerContainer<>(consumerFactory,
