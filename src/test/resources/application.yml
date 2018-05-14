@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: test
+endpoints:
+  shutdown:
+    enabled: true
+server:
+  port: 0
+
+---
+spring:
+  profiles: test

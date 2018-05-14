@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: kafka-rest-proxy
+  profiles:
+    active: dev
+info:
+  version: ${project.version}
+endpoints:
+  shutdown:
+    enabled: true
+server:
+  port: 8080
+
+---
+spring:
+  profiles: dev
+
+---
+spring:
+  profiles: docker
