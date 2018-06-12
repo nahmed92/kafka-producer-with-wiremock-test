@@ -8,9 +8,9 @@ info:
 endpoints:
   shutdown:
     enabled: true
+---
 server:
   port: 8080
-
 ---
 spring:
   profiles: dev
@@ -18,3 +18,14 @@ spring:
 ---
 spring:
   profiles: docker
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+---
+  kafka:
+    rest:
+      proxy:
+        schemaRegistryClient:
+          endpoint: http://localhost:8081

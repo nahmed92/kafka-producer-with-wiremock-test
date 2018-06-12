@@ -28,30 +28,34 @@
 
 package com.etilize.burraq.krp;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Represents the Application class which houses the main entry-point to run the application
+ * Schema Registry Client Property
  *
- * @author Faisal Feroz
+ * @author Nasir Ahmed
  *
  */
-@SpringBootApplication
-public class KafkaRestProxyApplication {
+@Configuration
+@ConfigurationProperties(prefix = "kafka.rest.proxy.schemaRegistryClient")
+public class SchemaRegistryClientProperties {
+
+    private String endpoint;
 
     /**
-     * protected constructor
+     * get schema registry end point
+     * @return endpoint of schemaregistry
      */
-    KafkaRestProxyApplication() {
+    public String getEndpoint() {
+        return this.endpoint;
     }
 
     /**
-     * main entry-point
-     *
-     * @param args arguments
+     * set schema registry end point
+     * @param endpoint of schemaregistry
      */
-    public static void main(String[] args) {
-        SpringApplication.run(KafkaRestProxyApplication.class, args);
+    public void setEndpoint(final String endpoint) {
+        this.endpoint = endpoint;
     }
 }

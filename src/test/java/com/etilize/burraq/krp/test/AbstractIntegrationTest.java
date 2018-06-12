@@ -28,6 +28,26 @@
 
 package com.etilize.burraq.krp.test;
 
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.KafkaMessageListenerContainer;
+import org.springframework.kafka.listener.MessageListener;
+import org.springframework.kafka.listener.config.ContainerProperties;
+import org.springframework.kafka.test.rule.KafkaEmbedded;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+
 /**
  * Base class for integration tests
  *
@@ -36,5 +56,64 @@ package com.etilize.burraq.krp.test;
  *
  */
 public abstract class AbstractIntegrationTest extends AbstractTest {
+
+    @Autowired
+    protected ApplicationContext context;
+
+    protected static String Message_TOPIC = "TestingTopic";
+
+    protected KafkaMessageListenerContainer<String, byte[]> container;
+
+    protected BlockingQueue<ConsumerRecord<String, byte[]>> records;
+
+    @ClassRule
+    public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(2, true, 2,
+            Message_TOPIC);
+
+    @Before
+    public void setUp() throws Exception {
+        // set up the Kafka consumer properties
+        final Map<String, Object> consumerProperties = KafkaTestUtils.consumerProps(
+                "messageService", "false", embeddedKafka);
+
+        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class);
+        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                ByteArrayDeserializer.class);
+
+        // create a Kafka consumer factory
+        final DefaultKafkaConsumerFactory<String, byte[]> consumerFactory = new DefaultKafkaConsumerFactory<>(
+                consumerProperties);
+
+        // set the topic that needs to be consumed
+        final ContainerProperties containerProperties = new ContainerProperties(
+                Message_TOPIC);
+
+        // create a Kafka MessageListenerContainer
+        container = new KafkaMessageListenerContainer<>(consumerFactory,
+                containerProperties);
+
+        // create a thread safe queue to store the received message
+        records = new LinkedBlockingQueue<>();
+
+        // setup a Kafka message listener
+        container.setupMessageListener(new MessageListener<String, byte[]>() {
+
+            @Override
+            public void onMessage(final ConsumerRecord<String, byte[]> record) {
+                records.add(record);
+            }
+        });
+
+        // start the container and underlying message listener
+        container.start();
+    }
+
+    @After
+    public void tearDown() {
+        // stop the container
+        container.stop();
+
+    }
 
 }

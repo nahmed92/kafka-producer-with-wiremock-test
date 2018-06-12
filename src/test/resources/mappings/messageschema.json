@@ -1,0 +1,13 @@
+{
+    "request": {
+    "method": "GET",
+        "url": "/schemas/ids/662"
+    },
+    "response": {
+        "status": 200,
+        "body": "{\"schema\":\"{\\\"type\\\":\\\"record\\\",\\\"name\\\":\\\"MessageSchema\\\",\\\"namespace\\\":\\\"com.etilize.burraq.krp\\\",\\\"fields\\\":[{\\\"name\\\":\\\"message\\\",\\\"type\\\":{\\\"type\\\":\\\"string\\\",\\\"avro.java.string\\\":\\\"String\\\"},\\\"doc\\\":\\\"Testing 1\\\"},{\\\"name\\\":\\\"description\\\",\\\"type\\\":{\\\"type\\\":\\\"string\\\",\\\"avro.java.string\\\":\\\"String\\\"},\\\"doc\\\":\\\"Testing 3\\\"}]}\"}",
+        "headers": {
+            "Content-Type": "application/vnd.schemaregistry.v1+json"
+        }
+    }
+}
