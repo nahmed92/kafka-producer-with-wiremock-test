@@ -61,7 +61,7 @@ public class MessageServiceIntegrationTest extends AbstractIntegrationTest {
         final JSONObject message = new JSONObject();
         message.put("message", "Test 1st Message");
         message.put("description", "Test Message Description");
-        final Message kafkaMessage = new Message(message, 662, Message_TOPIC);
+        final Message kafkaMessage = new Message(message, 662, MESSAGE_TOPIC);
         messageService.publish(kafkaMessage);
         // check that the message was received
         final ConsumerRecord<String, byte[]> received = records.poll(10,
@@ -84,7 +84,7 @@ public class MessageServiceIntegrationTest extends AbstractIntegrationTest {
         final JSONObject message = new JSONObject();
         message.put("message", "Test 1st Message");
         message.put("description", "Test 2nd Message");
-        final Message kafkaMessage = new Message(message, 661, Message_TOPIC);
+        final Message kafkaMessage = new Message(message, 661, MESSAGE_TOPIC);
         messageService.publish(kafkaMessage);
     }
 
